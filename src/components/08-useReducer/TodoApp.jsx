@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer } from "react";
 import { todoReducer } from "./todoReducer";
 import "./style.css";
-import { useForm } from "../../hooks/useForm";
 import { TodoList } from "./components/TodoList";
+import { TodoAdd } from "./components/TodoAdd";
 
 const init = () => {
   //   return [
@@ -18,33 +18,18 @@ const init = () => {
 
 export const TodoApp = () => {
   const [todos, dispatch] = useReducer(todoReducer, [], init);
-  const [formValues, handleInputChange, resetInput] = useForm({
-    description: "",
-  });
-  const { description } = formValues;
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleAdd = (todo) => {
+    const action = {
+      type: "add",
+      payload: todo,
+    };
 
-    if (description.trim().length >= 1) {
-      const newTodo = {
-        id: new Date().getTime(),
-        desc: description,
-        done: false,
-      };
-
-      const action = {
-        type: "add",
-        payload: newTodo,
-      };
-
-      resetInput();
-      dispatch(action);
-    }
+    dispatch(action);
   };
   const handleDelete = (todoId) => {
     const action = {
@@ -78,24 +63,7 @@ export const TodoApp = () => {
           ></TodoList>
         </div>
         <div className="col-5">
-          <h4>Agregar nueva tarea</h4>
-          <hr />
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              name="description"
-              className="form-control"
-              placeholder="Tu tarea"
-              autoComplete="off"
-              value={description}
-              onChange={handleInputChange}
-            />
-            <div className="d-grid gap-2">
-              <button className="mt-1 btn btn-outline-warning" type="submit">
-                Agregar
-              </button>
-            </div>
-          </form>
+          <TodoAdd handleAdd={handleAdd}></TodoAdd>
         </div>
       </div>
     </div>
